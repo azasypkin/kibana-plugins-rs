@@ -1,0 +1,7 @@
+{
+  "prefix": "exampleRs",
+  "paths": {
+    "exampleRs": "."
+  },
+  "translations": ["translations/ja-JP.json"]
+}

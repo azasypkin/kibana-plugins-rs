@@ -1,0 +1,14 @@
+{
+  "id": "exampleRs",
+  "version": "1.0.0",
+  "kibanaVersion": "kibana",
+  "owner": {
+    "name": "Aleh Zasypkin",
+    "githubTeam": ""
+  },
+  "description": "Example Kibana plugin written in Rust programming language",
+  "server": true,
+  "ui": true,
+  "requiredPlugins": ["navigation"],
+  "optionalPlugins": []
+}
