@@ -6,32 +6,36 @@ import {
   Logger,
 } from '../../../src/core/server';
 
-import { greet } from '../pkg';
+import rust from '../pkg';
 
 import { ExampleRsPluginSetup, ExampleRsPluginStart } from './types';
 import { defineRoutes } from './routes';
 
 export class ExampleRsPlugin implements Plugin<ExampleRsPluginSetup, ExampleRsPluginStart> {
   private readonly logger: Logger;
+  private readonly plugin: rust.Plugin;
 
   constructor(initializerContext: PluginInitializerContext) {
     this.logger = initializerContext.logger.get();
+    this.plugin = new rust.Plugin();
   }
 
   public setup(core: CoreSetup) {
-    this.logger.info('exampleRs: Setup');
-    const router = core.http.createRouter();
+    this.logger.debug('exampleRs: Setup');
 
-    greet('Oleg');
+    const pluginSetup = this.plugin.setup();
+    const similarity = pluginSetup.findSimilarity('Kibana', 'Elasticsearch');
+    this.logger.info(
+      `Calculated similarity of "Kibana" and "Elasticsearch" is ${similarity.value} (1 means the strings are identical, 0 - the strings are completely different)`
+    );
 
-    // Register server side APIs
-    defineRoutes(router);
+    defineRoutes(core.http.createRouter());
 
     return {};
   }
 
   public start(core: CoreStart) {
-    this.logger.info('exampleRs: Started');
+    this.logger.debug('exampleRs: Started');
     return {};
   }
 
