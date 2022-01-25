@@ -5,6 +5,11 @@ import { PLUGIN_NAME } from '../common';
 
 export class ExampleRsPlugin implements Plugin<ExampleRsPluginSetup, ExampleRsPluginStart> {
   public setup(core: CoreSetup): ExampleRsPluginSetup {
+    import('./wasm/kibana_plugin_public').then((wasm) => {
+      const wasmPlugin = new wasm.Plugin();
+      wasmPlugin.setup(core.http);
+    });
+
     // Register an application into the side navigation menu
     core.application.register({
       id: 'exampleRs',

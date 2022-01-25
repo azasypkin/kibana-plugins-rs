@@ -1,3 +1,4 @@
+mod base_path;
 mod http_setup;
 
-pub use http_setup::HttpSetup;
+pub use self::{base_path::BasePath, http_setup::HttpSetup};
