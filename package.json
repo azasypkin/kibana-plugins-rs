@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "build": "yarn plugin-helpers build",
+    "build-wasm": "wasm-pack build --target nodejs --out-dir ../../server/wasm wasm/kibana_plugin_server && wasm-pack build --target web --out-dir ../../public/wasm wasm/kibana_plugin_public",
     "plugin-helpers": "node ../../scripts/plugin_helpers",
     "kbn": "node ../../scripts/kbn"
   }

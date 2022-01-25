@@ -6,28 +6,22 @@ import {
   Logger,
 } from '../../../src/core/server';
 
-import rust from '../pkg';
+import wasm from './wasm';
 
 import { ExampleRsPluginSetup, ExampleRsPluginStart } from './types';
 import { defineRoutes } from './routes';
 
 export class ExampleRsPlugin implements Plugin<ExampleRsPluginSetup, ExampleRsPluginStart> {
   private readonly logger: Logger;
-  private readonly plugin: rust.Plugin;
+  private readonly wasmPlugin: wasm.Plugin;
 
   constructor(initializerContext: PluginInitializerContext) {
     this.logger = initializerContext.logger.get();
-    this.plugin = new rust.Plugin();
+    this.wasmPlugin = new wasm.Plugin(this.logger.get('wasm'));
   }
 
   public setup(core: CoreSetup) {
-    this.logger.debug('exampleRs: Setup');
-
-    const pluginSetup = this.plugin.setup();
-    const similarity = pluginSetup.findSimilarity('Kibana', 'Elasticsearch');
-    this.logger.info(
-      `Calculated similarity of "Kibana" and "Elasticsearch" is ${similarity.value} (1 means the strings are identical, 0 - the strings are completely different)`
-    );
+    this.wasmPlugin.setup();
 
     defineRoutes(core.http.createRouter());
 
@@ -35,9 +29,18 @@ export class ExampleRsPlugin implements Plugin<ExampleRsPluginSetup, ExampleRsPl
   }
 
   public start(core: CoreStart) {
-    this.logger.debug('exampleRs: Started');
+    const wasmStart = this.wasmPlugin.start();
+
+    this.logger.info(
+      `Calculated similarity of "Kibana" and "Elasticsearch" is ${
+        wasmStart.findSimilarity('Kibana', 'Elasticsearch').value
+      } (1 means the strings are identical, 0 - the strings are completely different)`
+    );
+
     return {};
   }
 
-  public stop() {}
+  public stop() {
+    this.wasmPlugin.free();
+  }
 }
