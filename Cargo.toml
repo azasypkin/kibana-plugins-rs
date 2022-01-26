@@ -2,9 +2,7 @@
 
 members = [
   "wasm/kibana_core_types",
-  "wasm/kibana_plugin_common",
-  "wasm/kibana_plugin_server",
-  "wasm/kibana_plugin_public"
+  "wasm/kibana_plugin"
 ]
 
 [profile.release]

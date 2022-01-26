@@ -1,4 +1,4 @@
-use crate::plugin::{PluginSetup, PluginStart};
+use crate::public::plugin::{PluginSetup, PluginStart};
 use kibana_core_types::public::CoreSetup;
 use wasm_bindgen::prelude::*;
 use web_sys::console;

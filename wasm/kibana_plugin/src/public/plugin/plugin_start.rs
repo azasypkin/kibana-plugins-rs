@@ -1,4 +1,4 @@
-use kibana_plugin_common::similarity::{find_similarity, Similarity};
+use crate::common::{find_similarity, Similarity};
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]

@@ -1,4 +1,4 @@
-use crate::plugin::{PluginSetup, PluginStart};
+use crate::server::plugin::{PluginSetup, PluginStart};
 use kibana_core_types::server::{packages::kbn_i18n, PluginInitializerContext};
 use wasm_bindgen::prelude::*;
 

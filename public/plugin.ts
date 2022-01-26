@@ -9,9 +9,7 @@ export class ExampleRsPlugin implements Plugin<ExampleRsPluginSetup, ExampleRsPl
   private wasmPlugin: Promise<wasm.Plugin>;
 
   constructor() {
-    this.wasmPlugin = import('./wasm/kibana_plugin_public').then(
-      (wasmModule) => new wasmModule.Plugin()
-    );
+    this.wasmPlugin = import('./wasm/kibana_plugin').then((wasmModule) => new wasmModule.Plugin());
   }
 
   public setup(core: CoreSetup): ExampleRsPluginSetup {
