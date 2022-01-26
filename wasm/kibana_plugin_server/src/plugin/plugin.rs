@@ -15,20 +15,20 @@ impl Plugin {
     }
 
     pub fn setup(&self) -> Result<PluginSetup, JsValue> {
-        let i18n_params = kbn_i18n::I18nParams::new("My localized name is {name}".to_string())
-            .with_values([("name", "Kibana")].iter().cloned().collect())
-            .map_err(|_| JsError::new("Failed to serialize i18n parameters."))?;
-
         self.logger.info(&format!(
-            "Setting up plugin with message: {}.",
-            kbn_i18n::translate("external.rust.name", i18n_params)
+            "Setting up plugin ({}).",
+            kbn_i18n::translate(
+                "exampleRs.welcomeMessage",
+                kbn_i18n::I18nParams::new("Welcome {name}!".to_string())
+                    .with_values([("name", "Kibana")].iter().cloned().collect()),
+            )?
         ));
 
         Ok(PluginSetup::new())
     }
 
-    pub fn start(&self) -> PluginStart {
+    pub fn start(&self) -> Result<PluginStart, JsValue> {
         self.logger.debug("Starting plugin.");
-        PluginStart::new()
+        Ok(PluginStart::new())
     }
 }

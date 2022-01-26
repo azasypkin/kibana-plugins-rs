@@ -76,6 +76,6 @@
     }
   },
   "messages": {
-    "exampleRs.buttonText": "Translate me to Japanese"
+    "exampleRs.welcomeMessage": "いらっしゃいませ {name}！"
   }
 }

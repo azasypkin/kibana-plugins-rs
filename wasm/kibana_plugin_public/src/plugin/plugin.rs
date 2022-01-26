@@ -13,7 +13,7 @@ impl Plugin {
         Self {}
     }
 
-    pub fn setup(&self, core: CoreSetup) -> PluginSetup {
+    pub fn setup(&self, core: CoreSetup) -> Result<PluginSetup, JsValue> {
         console::log_1(
             &format!(
                 "Setting up plugin (base path {}).",
@@ -21,11 +21,11 @@ impl Plugin {
             )
             .into(),
         );
-        PluginSetup::new(core)
+        Ok(PluginSetup::new())
     }
 
-    pub fn start(&self) -> PluginStart {
+    pub fn start(&self) -> Result<PluginStart, JsValue> {
         console::log_1(&"Starting plugin.".into());
-        PluginStart::new()
+        Ok(PluginStart::new())
     }
 }
