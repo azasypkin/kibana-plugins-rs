@@ -30,7 +30,7 @@ extern "C" {
 }
 
 pub fn translate(id: &str, params: I18nParams) -> Result<String, JsValue> {
-    let js_params = js_sys::Object::new();
+    let js_params = js_sys::Object::create(&JsValue::null().into());
     js_sys::Reflect::set(
         &js_params,
         &"defaultMessage".into(),
@@ -38,7 +38,7 @@ pub fn translate(id: &str, params: I18nParams) -> Result<String, JsValue> {
     )?;
 
     if let Some(values) = params.values {
-        let js_values = js_sys::Object::new();
+        let js_values = js_sys::Object::create(&JsValue::null().into());
         for (key, value) in values {
             js_sys::Reflect::set(&js_values, &key.into(), &value.into())?;
         }
