@@ -1,21 +1,22 @@
 use crate::plugin::{PluginSetup, PluginStart};
-use kibana_core_types::server::{packages::kbn_i18n, Logger};
+use kibana_core_types::server::{packages::kbn_i18n, PluginInitializerContext};
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
 pub struct Plugin {
-    logger: Logger,
+    context: PluginInitializerContext,
 }
 
 #[wasm_bindgen]
 impl Plugin {
     #[wasm_bindgen(constructor)]
-    pub fn new(logger: Logger) -> Self {
-        Self { logger }
+    pub fn new(context: PluginInitializerContext) -> Self {
+        Self { context }
     }
 
     pub fn setup(&self) -> Result<PluginSetup, JsValue> {
-        self.logger.info(&format!(
+        let logger = self.context.logger().get_with_context("wasm");
+        logger.info(&format!(
             "Setting up plugin ({}).",
             kbn_i18n::translate(
                 "exampleRs.welcomeMessage",
@@ -28,7 +29,10 @@ impl Plugin {
     }
 
     pub fn start(&self) -> Result<PluginStart, JsValue> {
-        self.logger.debug("Starting plugin.");
+        self.context
+            .logger()
+            .get_with_context("wasm")
+            .debug("Starting plugin.");
         Ok(PluginStart::new())
     }
 }
