@@ -54,12 +54,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "kibana-plugin-common"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_derive",
+ "strsim",
+ "wasm-bindgen",
+]
+
+[[package]]
 name = "kibana-plugin-public"
 version = "0.1.0"
 dependencies = [
  "console_error_panic_hook",
  "js-sys",
  "kibana-core-types",
+ "kibana-plugin-common",
  "serde",
  "serde_derive",
  "wasm-bindgen",
@@ -75,9 +86,9 @@ dependencies = [
  "console_error_panic_hook",
  "js-sys",
  "kibana-core-types",
+ "kibana-plugin-common",
  "serde",
  "serde_derive",
- "strsim",
  "wasm-bindgen",
  "wasm-bindgen-test",
  "web-sys",

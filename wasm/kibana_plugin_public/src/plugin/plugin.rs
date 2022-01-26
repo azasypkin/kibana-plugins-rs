@@ -16,7 +16,7 @@ impl Plugin {
     pub fn setup(&self, core: CoreSetup) -> Result<PluginSetup, JsValue> {
         console::log_1(
             &format!(
-                "Setting up plugin (base path {}).",
+                "[FROM WASM] Setting up plugin (base path {}).",
                 core.http().base_path().get()
             )
             .into(),
@@ -25,7 +25,7 @@ impl Plugin {
     }
 
     pub fn start(&self) -> Result<PluginStart, JsValue> {
-        console::log_1(&"Starting plugin.".into());
+        console::log_1(&"[FROM WASM] Starting plugin.".into());
         Ok(PluginStart::new())
     }
 }

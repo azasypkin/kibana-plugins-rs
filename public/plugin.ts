@@ -3,12 +3,19 @@ import { AppMountParameters, CoreSetup, CoreStart, Plugin } from '../../../src/c
 import { ExampleRsPluginSetup, ExampleRsPluginStart, AppPluginStartDependencies } from './types';
 import { PLUGIN_NAME } from '../common';
 
+import type * as wasm from './wasm';
+
 export class ExampleRsPlugin implements Plugin<ExampleRsPluginSetup, ExampleRsPluginStart> {
+  private wasmPlugin: Promise<wasm.Plugin>;
+
+  constructor() {
+    this.wasmPlugin = import('./wasm/kibana_plugin_public').then(
+      (wasmModule) => new wasmModule.Plugin()
+    );
+  }
+
   public setup(core: CoreSetup): ExampleRsPluginSetup {
-    import('./wasm/kibana_plugin_public').then((wasm) => {
-      const wasmPlugin = new wasm.Plugin();
-      wasmPlugin.setup(core.http);
-    });
+    this.wasmPlugin.then((wasmPlugin) => wasmPlugin.setup(core));
 
     // Register an application into the side navigation menu
     core.application.register({
@@ -38,8 +45,20 @@ export class ExampleRsPlugin implements Plugin<ExampleRsPluginSetup, ExampleRsPl
   }
 
   public start(core: CoreStart): ExampleRsPluginStart {
+    this.wasmPlugin.then((wasmPlugin) => {
+      const wasmStart = wasmPlugin.start();
+      console.log(
+        `[FROM JS] Calculated similarity of "Kibana" and "Elasticsearch" is ${
+          wasmStart.findSimilarity('Kibana', 'Elasticsearch').value
+        } (1 means the strings are identical, 0 - the strings are completely different)`
+      );
+    });
     return {};
   }
 
-  public stop() {}
+  public stop() {
+    this.wasmPlugin.then((wasmPlugin) => {
+      wasmPlugin.free();
+    });
+  }
 }
