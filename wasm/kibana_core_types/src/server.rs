@@ -1,1 +1,4 @@
-pub mod logging;
+mod logging;
+pub mod packages;
+
+pub use self::logging::Logger;
