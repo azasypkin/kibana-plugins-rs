@@ -7,8 +7,12 @@ mod response_options;
 mod route_config;
 
 pub use self::{
-    request::Request, request_context::RequestContext, request_handler::RequestHandler,
-    response::Response, response_factory::ResponseFactory, response_options::ResponseOptions,
+    request::Request,
+    request_context::{CoreRequestContext, ElasticsearchRequestContext, RequestContext},
+    request_handler::RequestHandler,
+    response::Response,
+    response_factory::ResponseFactory,
+    response_options::ResponseOptions,
     route_config::RouteConfig,
 };
 use wasm_bindgen::prelude::*;

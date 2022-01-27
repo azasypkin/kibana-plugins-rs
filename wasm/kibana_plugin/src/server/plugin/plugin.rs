@@ -27,7 +27,18 @@ impl Plugin {
         let router = core.http().create_router();
         router.post(
             RouteConfig::new("/api/wasm"),
-            self.route_handlers.create_handler(|_, _, res| {
+            self.route_handlers.create_handler(|context, _, res| {
+                let es_client = context
+                    .core()
+                    .elasticsearch()
+                    .client()
+                    .as_current_user()
+                    .security();
+
+                /*wasm_bindgen_futures::spawn_local((|| async {
+                    let promise: JsValue = es_client.authenticate().await.unwrap();
+                })());*/
+
                 let i18n_params = kbn_i18n::I18nParams::new("Welcome {name}!".to_string())
                     .with_values([("name", "Kibana")].iter().cloned().collect());
                 kbn_i18n::translate("exampleRs.welcomeMessage", i18n_params).map(

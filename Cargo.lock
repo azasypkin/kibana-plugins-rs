@@ -51,6 +51,7 @@ version = "0.1.0"
 dependencies = [
  "js-sys",
  "wasm-bindgen",
+ "wasm-bindgen-futures",
 ]
 
 [[package]]
@@ -64,6 +65,7 @@ dependencies = [
  "serde_derive",
  "strsim",
  "wasm-bindgen",
+ "wasm-bindgen-futures",
  "wasm-bindgen-test",
  "web-sys",
  "wee_alloc",
