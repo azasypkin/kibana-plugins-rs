@@ -1,7 +1,7 @@
-use super::route_handlers::RouteHandlers;
-use crate::server::plugin::{PluginSetup, PluginStart};
+use super::{route_handlers::RouteHandlers, PluginSetup, PluginStart};
 use kibana_core_types::server::{
-    packages::kbn_i18n, CoreSetup, Logger, PluginInitializerContext, ResponseOptions, RouteConfig,
+    packages::kbn_i18n, AuthenticationInfo, CoreSetup, Logger, PluginInitializerContext,
+    ResponseOptions, RouteConfig,
 };
 use wasm_bindgen::prelude::*;
 
@@ -28,27 +28,28 @@ impl Plugin {
         router.post(
             RouteConfig::new("/api/wasm"),
             self.route_handlers.create_handler(|context, _, res| {
-                let es_client = context
-                    .core()
-                    .elasticsearch()
-                    .client()
-                    .as_current_user()
-                    .security();
+                wasm_bindgen_futures::future_to_promise(async move {
+                    let es_client = context.core().elasticsearch().client().as_current_user();
 
-                /*wasm_bindgen_futures::spawn_local((|| async {
-                    let promise: JsValue = es_client.authenticate().await.unwrap();
-                })());*/
+                    // Retrieve current user information.
+                    let current_user: AuthenticationInfo =
+                        es_client.security().authenticate().await?;
 
-                let i18n_params = kbn_i18n::I18nParams::new("Welcome {name}!".to_string())
-                    .with_values([("name", "Kibana")].iter().cloned().collect());
-                kbn_i18n::translate("exampleRs.welcomeMessage", i18n_params).map(
-                    |translated_string| {
-                        res.ok_with_options(ResponseOptions::with_body(format!(
-                            "Response: {}.",
-                            translated_string
-                        )))
-                    },
-                )
+                    // Use kbn/i18n package to localize message.
+                    let i18n_params = kbn_i18n::I18nParams::new("Welcome {name}!".to_string())
+                        .with_values([("name", "Kibana")].iter().cloned().collect());
+                    let i18n_message =
+                        kbn_i18n::translate("exampleRs.welcomeMessage", i18n_params)?;
+
+                    // Prepare response struct.
+                    let response = res.ok_with_options(ResponseOptions::with_body(format!(
+                        "Response: {} (current user is {}).",
+                        i18n_message, current_user.username
+                    )));
+
+                    // Turn response into a `JSValue`.
+                    Ok(response.into())
+                })
             }),
         );
 

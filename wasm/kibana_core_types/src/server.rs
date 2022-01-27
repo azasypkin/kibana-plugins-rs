@@ -7,7 +7,10 @@ mod plugins;
 
 pub use self::{
     core::CoreSetup,
-    elasticsearch::{ElasticsearchClient, ElasticsearchClientSecurity, ScopedElasticsearchClient},
+    elasticsearch::{
+        AuthenticationInfo, ElasticsearchClient, ElasticsearchClientSecurity,
+        ScopedElasticsearchClient,
+    },
     http::{
         BasePath, HttpSetup, Request, RequestContext, RequestHandler, Response, ResponseFactory,
         ResponseOptions, RouteConfig, Router,
