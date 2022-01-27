@@ -4,8 +4,16 @@ use kibana_core_types::server::{
     packages::kbn_i18n, AuthenticationInfo, CoreSetup, Logger, PluginInitializerContext,
     ResponseOptions, RouteConfig,
 };
+use serde::Deserialize;
 use serde_json::json;
 use wasm_bindgen::prelude::*;
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct WasmRequestBody {
+    word_a: String,
+    word_b: String,
+}
 
 #[wasm_bindgen]
 pub struct Plugin {
@@ -29,8 +37,15 @@ impl Plugin {
         let router = core.http().create_router();
         router.post(
             RouteConfig::new("/api/wasm"),
-            self.route_handlers.create_handler(|context, _, res| {
+            self.route_handlers.create_handler(|context, request, res| {
                 wasm_bindgen_futures::future_to_promise(async move {
+                    // Retrieve request parameters.
+                    let request_body = if let Some(body) = request.body::<WasmRequestBody>() {
+                        body
+                    } else {
+                        return Err(JsValue::from("Cannot deserialize request body."))
+                    };
+
                     // Retrieve current user information from Elasticsearch.
                     let es_client = context.core().elasticsearch().client().as_current_user();
                     let current_user: AuthenticationInfo =
@@ -48,8 +63,10 @@ impl Plugin {
 
                     // Prepare response struct.
                     let response = res.ok_with_options(ResponseOptions::with_body(
-                        json!({ "comment": i18n_comment, "similarity": find_similarity("k", "k").value })
-                            .to_string(),
+                        json!({
+                            "comment": i18n_comment,
+                            "similarity": find_similarity(&request_body.word_a, &request_body.word_b).value
+                        }).to_string(),
                     ));
 
                     // Turn response into a `JSValue`.
