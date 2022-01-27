@@ -11,18 +11,9 @@ export function plugin(initializerContext: PluginInitializerContext) {
       return wasmPlugin.setup(core);
     },
 
-    start(core: CoreStart) {
-      const wasmStart = wasmPlugin.start();
-
-      initializerContext.logger
-        .get()
-        .info(
-          `Calculated similarity of "Kibana" and "Elasticsearch" is ${
-            wasmStart.findSimilarity('Kibana', 'Elasticsearch').value
-          } (1 means the strings are identical, 0 - the strings are completely different)`
-        );
-
-      return wasmStart;
+    start() {
+      initializerContext.logger.get().debug('Setting up plugin.');
+      return wasmPlugin.start();
     },
 
     stop() {

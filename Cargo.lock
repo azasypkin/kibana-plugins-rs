@@ -65,6 +65,7 @@ dependencies = [
  "kibana-core-types",
  "serde",
  "serde_derive",
+ "serde_json",
  "strsim",
  "wasm-bindgen",
  "wasm-bindgen-futures",

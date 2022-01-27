@@ -1,4 +1,3 @@
-import { i18n } from '@kbn/i18n';
 import { AppMountParameters, CoreSetup, CoreStart, Plugin } from '../../../src/core/public';
 import { ExampleRsPluginSetup, ExampleRsPluginStart, AppPluginStartDependencies } from './types';
 import { PLUGIN_NAME } from '../common';
@@ -12,51 +11,39 @@ export class ExampleRsPlugin implements Plugin<ExampleRsPluginSetup, ExampleRsPl
     this.wasmPlugin = import('./wasm/kibana_plugin').then((wasmModule) => new wasmModule.Plugin());
   }
 
-  public setup(core: CoreSetup): ExampleRsPluginSetup {
-    this.wasmPlugin.then((wasmPlugin) => wasmPlugin.setup(core));
-
+  public setup(
+    core: CoreSetup<AppPluginStartDependencies, ExampleRsPluginStart>
+  ): ExampleRsPluginSetup {
     // Register an application into the side navigation menu
     core.application.register({
       id: 'exampleRs',
       title: PLUGIN_NAME,
       async mount(params: AppMountParameters) {
-        // Load application bundle
         const { renderApp } = await import('./application');
-        // Get start services as specified in kibana.json
-        const [coreStart, depsStart] = await core.getStartServices();
-        // Render the application
-        return renderApp(coreStart, depsStart as AppPluginStartDependencies, params);
+        const [coreStart, depsStart, ownStart] = await core.getStartServices();
+        return renderApp(coreStart, depsStart, ownStart, params);
       },
     });
 
-    // Return methods that should be available to other plugins
-    return {
-      getGreeting() {
-        return i18n.translate('exampleRs.greetingText', {
-          defaultMessage: 'Hello from {name}!',
-          values: {
-            name: PLUGIN_NAME,
-          },
-        });
-      },
-    };
-  }
-
-  public start(core: CoreStart): ExampleRsPluginStart {
-    this.wasmPlugin.then((wasmPlugin) => {
-      const wasmStart = wasmPlugin.start();
-      console.log(
-        `[FROM JS] Calculated similarity of "Kibana" and "Elasticsearch" is ${
-          wasmStart.findSimilarity('Kibana', 'Elasticsearch').value
-        } (1 means the strings are identical, 0 - the strings are completely different)`
-      );
+    // Initialize WASM plugin part and rewrite `Promise` to make sure `start` is only invoked after
+    // `setup` is complete.
+    this.wasmPlugin = this.wasmPlugin.then((wasmPlugin) => {
+      wasmPlugin.setup(core);
+      return wasmPlugin;
     });
     return {};
   }
 
+  public start(core: CoreStart): ExampleRsPluginStart {
+    const wasmStart = this.wasmPlugin.then((wasmPlugin) => wasmPlugin.start());
+    return {
+      async findSimilarity(stringA, stringB) {
+        return (await wasmStart).findSimilarity(stringA, stringB);
+      },
+    };
+  }
+
   public stop() {
-    this.wasmPlugin.then((wasmPlugin) => {
-      wasmPlugin.free();
-    });
+    this.wasmPlugin.then((wasmPlugin) => wasmPlugin.free());
   }
 }

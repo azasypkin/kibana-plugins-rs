@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
-import { i18n } from '@kbn/i18n';
 import { FormattedMessage, I18nProvider } from '@kbn/i18n-react';
 import { BrowserRouter as Router } from 'react-router-dom';
-
 import {
   EuiButton,
   EuiHorizontalRule,
@@ -14,34 +12,44 @@ import {
   EuiPageHeader,
   EuiTitle,
   EuiText,
+  EuiFieldText,
+  EuiSpacer,
 } from '@elastic/eui';
 
 import { CoreStart } from '../../../../src/core/public';
 import { NavigationPublicPluginStart } from '../../../../src/plugins/navigation/public';
 
 import { PLUGIN_ID, PLUGIN_NAME } from '../../common';
+import { ExampleRsPluginStart } from '../types';
 
 interface ExampleRsAppDeps {
   basename: string;
   notifications: CoreStart['notifications'];
   http: CoreStart['http'];
+  ownStart: ExampleRsPluginStart;
   navigation: NavigationPublicPluginStart;
 }
 
-export const ExampleRsApp = ({ basename, notifications, http, navigation }: ExampleRsAppDeps) => {
-  // Use React hooks to manage state.
-  const [timestamp, setTimestamp] = useState<string | undefined>();
+export const ExampleRsApp = ({ basename, http, navigation, ownStart }: ExampleRsAppDeps) => {
+  const [words, setWords] = useState<{ wordA?: string; wordB?: string }>({});
+  const [similarities, setSimilarities] = useState<{ client?: number; server?: number }>({});
+
+  const onWordAChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setWords({ ...words, wordA: e.target.value });
+  };
+
+  const onWordBChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setWords({ ...words, wordB: e.target.value });
+  };
 
   const onClickHandler = () => {
-    // Use the core http service to make a response to the server API.
-    http.get('/api/example_rs/example').then((res) => {
-      setTimestamp(res.time);
-      // Use the core notifications service to display a success message.
-      notifications.toasts.addSuccess(
-        i18n.translate('exampleRs.dataUpdated', {
-          defaultMessage: 'Data updated',
-        })
-      );
+    Promise.all([
+      ownStart.findSimilarity(words.wordA!, words.wordB!).then((similarity) => similarity.value),
+      http
+        .post<{ comment: string; similarity: number }>('/api/wasm', { body: JSON.stringify(words) })
+        .then((res) => res.similarity),
+    ]).then(([client, server]) => {
+      setSimilarities({ client, server });
     });
   };
 
@@ -75,7 +83,7 @@ export const ExampleRsApp = ({ basename, notifications, http, navigation }: Exam
                     <h2>
                       <FormattedMessage
                         id="exampleRs.congratulationsTitle"
-                        defaultMessage="Congratulations, you have successfully created a new Kibana Plugin!"
+                        defaultMessage="Rust + Typescript + Kibana = ❤️"
                       />
                     </h2>
                   </EuiTitle>
@@ -85,19 +93,47 @@ export const ExampleRsApp = ({ basename, notifications, http, navigation }: Exam
                     <p>
                       <FormattedMessage
                         id="exampleRs.content"
-                        defaultMessage="Look through the generated code and check out the plugin development documentation."
+                        defaultMessage="Check similarity of two words using Levenshtein distance."
                       />
                     </p>
                     <EuiHorizontalRule />
                     <p>
                       <FormattedMessage
                         id="exampleRs.timestampText"
-                        defaultMessage="Last timestamp: {time}"
-                        values={{ time: timestamp ? timestamp : 'Unknown' }}
+                        defaultMessage="Calculated on the client-side: {similarity}"
+                        values={{
+                          similarity: similarities.client ?? 'Unknown',
+                        }}
                       />
                     </p>
-                    <EuiButton type="primary" size="s" onClick={onClickHandler}>
-                      <FormattedMessage id="exampleRs.buttonText" defaultMessage="Get data" />
+                    <p>
+                      <FormattedMessage
+                        id="exampleRs.timestampText"
+                        defaultMessage="Calculated on the server-side: {similarity}"
+                        values={{
+                          similarity: similarities.server ?? 'Unknown',
+                        }}
+                      />
+                    </p>
+                    <EuiFieldText
+                      placeholder="Word A"
+                      value={words.wordA}
+                      onChange={onWordAChange}
+                    />
+                    <EuiSpacer />
+                    <EuiFieldText
+                      placeholder="Word B"
+                      value={words.wordB}
+                      onChange={onWordBChange}
+                    />
+                    <EuiSpacer />
+                    <EuiButton
+                      type="primary"
+                      size="s"
+                      onClick={onClickHandler}
+                      isDisabled={!words.wordA || !words.wordB}
+                    >
+                      <FormattedMessage id="exampleRs.buttonText" defaultMessage="Check" />
                     </EuiButton>
                   </EuiText>
                 </EuiPageContentBody>
