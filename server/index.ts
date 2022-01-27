@@ -8,7 +8,7 @@ export function plugin(initializerContext: PluginInitializerContext) {
   const wasmPlugin = new wasm.Plugin(initializerContext);
   return {
     setup(core: CoreSetup) {
-      return wasmPlugin.setup();
+      return wasmPlugin.setup(core);
     },
 
     start(core: CoreStart) {
