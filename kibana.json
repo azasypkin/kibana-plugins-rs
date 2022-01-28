@@ -6,7 +6,7 @@
     "name": "Aleh Zasypkin",
     "githubTeam": ""
   },
-  "description": "Example Kibana plugin written in Rust programming language",
+  "description": "An example Kibana plugin written in Rust and Typescript",
   "server": true,
   "ui": true,
   "requiredPlugins": ["navigation"],

@@ -2,9 +2,9 @@
 name = "kibana-plugin"
 version = "0.1.0"
 authors = ["Aleh Zasypkin"]
-description = "Example Kibana plugin written in Rust programming language (Server-Side)"
+description = "An example Kibana plugin written in Rust and Typescript"
 repository = "https://github.com/azasypkin/kibana-plugins-rs"
-license = ""
+license = "MIT"
 edition = "2021"
 
 [lib]

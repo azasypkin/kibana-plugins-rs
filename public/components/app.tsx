@@ -19,7 +19,7 @@ import {
 import { CoreStart } from '../../../../src/core/public';
 import { NavigationPublicPluginStart } from '../../../../src/plugins/navigation/public';
 
-import { PLUGIN_ID, PLUGIN_NAME } from '../../common';
+import { PLUGIN_ID } from '../../common';
 import { ExampleRsPluginStart } from '../types';
 
 interface ExampleRsAppDeps {
@@ -71,7 +71,7 @@ export const ExampleRsApp = ({ basename, http, navigation, ownStart }: ExampleRs
                   <h1>
                     <FormattedMessage
                       id="exampleRs.congratulationsTitle"
-                      defaultMessage="Rust + Kibana = 🦀️"
+                      defaultMessage="🦀 Rust + ✨ Kibana = 🔥"
                     />
                   </h1>
                 </EuiTitle>
@@ -81,7 +81,7 @@ export const ExampleRsApp = ({ basename, http, navigation, ownStart }: ExampleRs
                   <EuiText>
                     <p>
                       <EuiText>
-                        Check similarity of two words using Levenshtein distance using Rust{' '}
+                        Check similarity of two words using Levenshtein distance algorithm from Rust{' '}
                         <EuiLink href="https://crates.io/crates/strsim" target="_blank">
                           <b>strsim-rs</b>
                         </EuiLink>{' '}

@@ -1,4 +1,4 @@
-# Rust + Kibana = 🦀️
+# 🦀 Rust + ✨ Kibana = 🔥
 
 An example Kibana plugin written in Rust and Typescript.
 
