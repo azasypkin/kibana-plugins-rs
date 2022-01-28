@@ -1,3 +1,5 @@
+#![deny(warnings)]
+
 mod common;
 mod utils;
 

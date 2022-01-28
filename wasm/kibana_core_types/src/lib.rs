@@ -1,3 +1,5 @@
+#![deny(warnings)]
+
 #[cfg(feature = "server")]
 pub mod server;
 

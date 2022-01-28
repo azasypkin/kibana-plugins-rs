@@ -42,12 +42,14 @@ impl RouteConfig {
 }
 
 #[wasm_bindgen(getter_with_clone)]
+#[allow(dead_code)]
 pub(crate) struct RouteConfigWithoutValidation {
     pub path: String,
     pub validate: bool,
 }
 
 #[wasm_bindgen(getter_with_clone)]
+#[allow(dead_code)]
 pub(crate) struct RouteConfigWithValidation {
     pub path: String,
     pub validate: js_sys::Object,
