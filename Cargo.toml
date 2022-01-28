@@ -1,8 +1,8 @@
 [workspace]
 
 members = [
-  "wasm/kibana_core_types",
-  "wasm/kibana_plugin"
+  "workspace/kibana_core_types",
+  "workspace/kibana_plugin"
 ]
 
 [profile.release]

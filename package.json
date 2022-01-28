@@ -3,8 +3,10 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "build": "yarn plugin-helpers build",
-    "build-wasm": "wasm-pack build --target nodejs --out-dir ../../server/wasm wasm/kibana_plugin --features server && wasm-pack build --out-dir ../../public/wasm wasm/kibana_plugin --features public",
+    "build": "yarn build-wasm && yarn plugin-helpers build",
+    "build-wasm": "yarn build-client-wasm && yarn build-server-wasm",
+    "build-client-wasm": "wasm-pack build --out-dir ../../public/wasm workspace/kibana_plugin --features public",
+    "build-server-wasm": "wasm-pack build --target nodejs --out-dir ../../server/wasm workspace/kibana_plugin --features server",
     "plugin-helpers": "node ../../scripts/plugin_helpers",
     "kbn": "node ../../scripts/kbn"
   }
