@@ -8,12 +8,12 @@ import {
   EuiPageBody,
   EuiPageContent,
   EuiPageContentBody,
-  EuiPageContentHeader,
   EuiPageHeader,
   EuiTitle,
   EuiText,
   EuiFieldText,
   EuiSpacer,
+  EuiLink,
 } from '@elastic/eui';
 
 import { CoreStart } from '../../../../src/core/public';
@@ -70,48 +70,42 @@ export const ExampleRsApp = ({ basename, http, navigation, ownStart }: ExampleRs
                 <EuiTitle size="l">
                   <h1>
                     <FormattedMessage
-                      id="exampleRs.helloWorldText"
-                      defaultMessage="{name}"
-                      values={{ name: PLUGIN_NAME }}
+                      id="exampleRs.congratulationsTitle"
+                      defaultMessage="Rust + Kibana = 🦀️"
                     />
                   </h1>
                 </EuiTitle>
               </EuiPageHeader>
               <EuiPageContent>
-                <EuiPageContentHeader>
-                  <EuiTitle>
-                    <h2>
-                      <FormattedMessage
-                        id="exampleRs.congratulationsTitle"
-                        defaultMessage="Rust + Typescript + Kibana = ❤️"
-                      />
-                    </h2>
-                  </EuiTitle>
-                </EuiPageContentHeader>
                 <EuiPageContentBody>
                   <EuiText>
                     <p>
-                      <FormattedMessage
-                        id="exampleRs.content"
-                        defaultMessage="Check similarity of two words using Levenshtein distance."
-                      />
+                      <EuiText>
+                        Check similarity of two words using Levenshtein distance using Rust{' '}
+                        <EuiLink href="https://crates.io/crates/strsim" target="_blank">
+                          <b>strsim-rs</b>
+                        </EuiLink>{' '}
+                        crate
+                      </EuiText>
                     </p>
                     <EuiHorizontalRule />
                     <p>
                       <FormattedMessage
                         id="exampleRs.timestampText"
-                        defaultMessage="Calculated on the client-side: {similarity}"
+                        defaultMessage="Calculated on the {source}: {similarity}"
                         values={{
-                          similarity: similarities.client ?? 'Unknown',
+                          similarity: similarities.client ?? '?',
+                          source: <b>client-side</b>,
                         }}
                       />
                     </p>
                     <p>
                       <FormattedMessage
                         id="exampleRs.timestampText"
-                        defaultMessage="Calculated on the server-side: {similarity}"
+                        defaultMessage="Calculated on the {source}: {similarity}"
                         values={{
-                          similarity: similarities.server ?? 'Unknown',
+                          similarity: similarities.server ?? '?',
+                          source: <b>server-side</b>,
                         }}
                       />
                     </p>

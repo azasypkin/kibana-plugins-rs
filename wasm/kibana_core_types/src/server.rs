@@ -13,7 +13,7 @@ pub use self::{
     },
     http::{
         BasePath, HttpSetup, Request, RequestContext, RequestHandler, Response, ResponseFactory,
-        ResponseOptions, RouteConfig, Router,
+        ResponseOptions, RouteConfig, RouteSchema, Router,
     },
     logging::{Logger, LoggerFactory},
     plugins::PluginInitializerContext,

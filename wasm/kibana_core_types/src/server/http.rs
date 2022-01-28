@@ -7,6 +7,6 @@ pub use self::{
     http_setup::HttpSetup,
     router::{
         CoreRequestContext, ElasticsearchRequestContext, Request, RequestContext, RequestHandler,
-        Response, ResponseFactory, ResponseOptions, RouteConfig, Router,
+        Response, ResponseFactory, ResponseOptions, RouteConfig, RouteSchema, Router,
     },
 };

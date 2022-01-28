@@ -1,8 +1,9 @@
 use super::{route_handlers::RouteHandlers, PluginSetup, PluginStart};
 use crate::common::find_similarity;
 use kibana_core_types::server::{
-    packages::kbn_i18n, AuthenticationInfo, CoreSetup, Logger, PluginInitializerContext,
-    ResponseOptions, RouteConfig,
+    packages::{kbn_config_schema::Schema, kbn_i18n},
+    AuthenticationInfo, CoreSetup, Logger, PluginInitializerContext, ResponseOptions, RouteConfig,
+    RouteSchema,
 };
 use serde::Deserialize;
 use serde_json::json;
@@ -36,7 +37,7 @@ impl Plugin {
 
         let router = core.http().create_router();
         router.post(
-            RouteConfig::new("/api/wasm"),
+            RouteConfig::new("/api/wasm").with_schema(RouteSchema::default().body(Schema::any())),
             self.route_handlers.create_handler(|context, request, res| {
                 wasm_bindgen_futures::future_to_promise(async move {
                     // Retrieve request parameters.
@@ -73,7 +74,7 @@ impl Plugin {
                     Ok(response.into())
                 })
             }),
-        );
+        )?;
 
         Ok(PluginSetup::new())
     }
