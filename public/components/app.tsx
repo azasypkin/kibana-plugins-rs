@@ -16,8 +16,8 @@ import {
   EuiLink,
 } from '@elastic/eui';
 
-import { CoreStart } from '../../../../src/core/public';
-import { NavigationPublicPluginStart } from '../../../../src/plugins/navigation/public';
+import { CoreStart } from '@kbn/core/public';
+import { NavigationPublicPluginStart } from '@kbn/navigation-plugin/public';
 
 import { PLUGIN_ID } from '../../common';
 import { ExampleRsPluginStart } from '../types';
@@ -32,7 +32,11 @@ interface ExampleRsAppDeps {
 
 export const ExampleRsApp = ({ basename, http, navigation, ownStart }: ExampleRsAppDeps) => {
   const [words, setWords] = useState<{ wordA?: string; wordB?: string }>({});
-  const [similarities, setSimilarities] = useState<{ client?: number; server?: number }>({});
+  const [operationResult, setOperationResult] = useState<{
+    comment?: string;
+    client?: number;
+    server?: number;
+  }>({});
 
   const onWordAChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setWords({ ...words, wordA: e.target.value });
@@ -42,15 +46,14 @@ export const ExampleRsApp = ({ basename, http, navigation, ownStart }: ExampleRs
     setWords({ ...words, wordB: e.target.value });
   };
 
-  const onClickHandler = () => {
-    Promise.all([
-      ownStart.findSimilarity(words.wordA!, words.wordB!).then((similarity) => similarity.value),
-      http
-        .post<{ comment: string; similarity: number }>('/api/wasm', { body: JSON.stringify(words) })
-        .then((res) => res.similarity),
-    ]).then(([client, server]) => {
-      setSimilarities({ client, server });
+  const onClickHandler = async () => {
+    const client = await ownStart
+      .findSimilarity(words.wordA!, words.wordB!)
+      .then((similarity) => similarity.value);
+    const server = await http.post<{ comment: string; similarity: number }>('/api/wasm', {
+      body: JSON.stringify(words),
     });
+    setOperationResult({ client, server: server.similarity, comment: server.comment });
   };
 
   // Render the application DOM.
@@ -94,7 +97,7 @@ export const ExampleRsApp = ({ basename, http, navigation, ownStart }: ExampleRs
                         id="exampleRs.timestampText"
                         defaultMessage="Calculated on the {source}: {similarity}"
                         values={{
-                          similarity: similarities.client ?? '?',
+                          similarity: operationResult.client ?? '?',
                           source: <b>client-side</b>,
                         }}
                       />
@@ -104,7 +107,17 @@ export const ExampleRsApp = ({ basename, http, navigation, ownStart }: ExampleRs
                         id="exampleRs.timestampText"
                         defaultMessage="Calculated on the {source}: {similarity}"
                         values={{
-                          similarity: similarities.server ?? '?',
+                          similarity: operationResult.server ?? '?',
+                          source: <b>server-side</b>,
+                        }}
+                      />
+                    </p>
+                    <p>
+                      <FormattedMessage
+                        id="exampleRs.localizedText"
+                        defaultMessage="String created and localized on the {source}: {user}"
+                        values={{
+                          user: operationResult.comment ?? '?',
                           source: <b>server-side</b>,
                         }}
                       />

@@ -48,12 +48,12 @@ impl Plugin {
                     };
 
                     // Retrieve current user information from Elasticsearch.
-                    let es_client = context.core().elasticsearch().client().as_current_user();
+                    let es_client = context.core().await?.elasticsearch().client().as_current_user();
                     let current_user: AuthenticationInfo =
                         es_client.security().authenticate().await?;
 
                     // Use kbn/i18n package to localize message.
-                    let i18n_params = kbn_i18n::I18nParams::new("Welcome {name}!".to_string())
+                    let i18n_params = kbn_i18n::I18nParams::new("Username retrieved from Elasticsearch is `{name}`!".to_string())
                         .with_values(
                             [("name", current_user.username.as_ref())]
                                 .iter()

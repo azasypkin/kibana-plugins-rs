@@ -13,6 +13,7 @@ pub struct Similarity {
 
 /// Calculates a normalized score of the Levenshtein algorithm between 0.0 and 1.0 (inclusive),
 /// where 1.0 means the strings are the same.
+#[allow(dead_code)]
 pub fn find_similarity(string_a: &str, string_b: &str) -> Similarity {
     Similarity {
         value: strsim::normalized_levenshtein(string_a, string_b),

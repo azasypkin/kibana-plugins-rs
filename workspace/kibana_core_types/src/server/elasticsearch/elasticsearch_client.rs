@@ -6,11 +6,6 @@ pub struct AuthenticationInfo {
     pub username: String,
 }
 
-#[derive(Serialize, Deserialize, Clone, PartialEq, Debug)]
-pub struct ElasticsearchResponse<T> {
-    body: T,
-}
-
 #[wasm_bindgen]
 extern "C" {
     pub type ElasticsearchClient;
@@ -27,12 +22,9 @@ impl ElasticsearchClientSecurity {
     pub async fn authenticate(&self) -> Result<AuthenticationInfo, JsValue> {
         // WORKAROUND: wasm_bindgen can only return `JsValue` for functions that return `Promise`
         // and we should do deserialization manually.
-        self.external_authenticate()
-            .await
-            .and_then(|js_value| {
-                JsValue::into_serde::<ElasticsearchResponse<AuthenticationInfo>>(&js_value)
-                    .map_err(|serialize_error| JsValue::from(serialize_error.to_string()))
-            })
-            .map(|response| response.body)
+        self.external_authenticate().await.and_then(|js_value| {
+            JsValue::into_serde::<AuthenticationInfo>(&js_value)
+                .map_err(|serialize_error| JsValue::from(serialize_error.to_string()))
+        })
     }
 }
